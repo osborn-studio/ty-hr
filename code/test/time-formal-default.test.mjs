@@ -13,4 +13,17 @@ check('picker includes authorized people across pages independently of selected 
 const escaped=await query({company_id:44900,store_ids:[44901],include_roster_people:true});
 check('store filters cannot escape authorized outer query scope',escaped.total===0&&escaped.roster_people.length===0);
 const daily=await query({view:'daily'});check('daily report workspace exposes the current single formal plan without replacing report rows',daily.using_formal&&String(daily.plan?.id)===String(pb.id));
-const exported=await withTx(db,t=>exportReport(t,{userId:44900,input:{group_id:44900,company_id:44900,period:'2026-10',view:'schedule'}}));check('default Excel exports the formal schedule',exported.total===1);console.log(JSON.stringify({suite:'time-formal-default',driver:db.driver,checks}));}finally{await db.close();}
+const exported=await withTx(db,t=>exportReport(t,{userId:44900,input:{group_id:44900,company_id:44900,period:'2026-10',view:'schedule'}}));check('default Excel exports the formal schedule',exported.total===1);
+check('a store publication carries its original plan scope',live.plan.group_wide===false);
+const nextMonth='2026-11',workDate=nextMonth+'-15';
+const nextScope={period:nextMonth,date_from:workDate,date_to:workDate};
+let groupDraft=(await call('plan.create',{period:nextMonth,label:'11月集团排班'})).plan;
+groupDraft=(await call('segment.save',{period:nextMonth,plan_id:groupDraft.id,expected_plan_revision:groupDraft.revision,employment_id:44900,work_date:workDate,start_at:workDate+'T09:00:00+08:00',end_at:workDate+'T17:00:00+08:00',work_company_id:44900,department_id:44900,label:'早班',color:'#235dd3',breaks:[]})).plan;
+const groupFormal=(await call('plan.publish',{period:nextMonth,id:groupDraft.id,expected_revision:groupDraft.revision,reason:'复核集团当月排班后发布'},44901)).plan;
+const storeView=await query(nextScope);
+check('a store can view a group publication without losing its original scope',storeView.formal_plans[0].group_wide===true&&storeView.plan.group_wide===true);
+await assert.rejects(()=>call('plan.create',{period:nextMonth,company_id:44900,source_plan_id:groupFormal.id,label:'错误的单店复制'}),/来源|公司|范围/);
+checks++;
+const groupCopy=(await call('plan.create',{period:nextMonth,source_plan_id:groupFormal.id,label:'集团正式版修订草稿'})).plan;
+check('copying a group publication retains group scope',groupCopy.company_id===null&&String(groupCopy.source_plan_id)===String(groupFormal.id));
+console.log(JSON.stringify({suite:'time-formal-default',driver:db.driver,checks}));}finally{await db.close();}
