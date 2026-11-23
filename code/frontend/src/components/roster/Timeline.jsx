@@ -2,10 +2,15 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Button,Notice} from '../UI.jsx';
 import {clipboardProposals,copyModifier,gesturePreview,localMinute,localStamp,minuteLabel,minutesLabel,normalizeEditorSegment,relationKey,sameId,segmentRelationKey,snapMinute,dayArrangementLabel,visibleDayArrangement} from '../../rostering-model.mjs';
 
-export default function RosterTimeline({date,rows=[],segments=[],shifts=[],canEdit=false,mode='select',step=15,selected=[],onSelected,onPropose,onInspect}) {
+export default function RosterTimeline({date,jump,rows=[],segments=[],shifts=[],canEdit=false,mode='select',step=15,selected=[],onSelected,onPropose,onInspect}) {
  const [hours,setHours]=useState(36),[scale,setScale]=useState(56),[drag,setDrag]=useState(null),[anchor,setAnchor]=useState(null),[clipboard,setClipboard]=useState(null),[message,setMessage]=useState('');
  const scroller=useRef(null),surface=useRef(null),active=useRef(null),dragRef=useRef(null);const ppm=scale/60,isMac=typeof navigator!=='undefined'&&/Mac|iPhone|iPad/.test(navigator.platform);
  const select=ids=>onSelected?.([...new Set(ids.map(String))]);
+ useEffect(()=>{
+  if(!jump||!scroller.current)return;
+  const [hour,minute]=jump.time.split(':').map(Number);
+  scroller.current.scrollLeft=Math.max(0,(hour*60+minute)*ppm);
+ },[jump,ppm,date]);
  useEffect(()=>{dragRef.current=drag;},[drag]);
  useEffect(()=>{const cancel=()=>{active.current=null;dragRef.current=null;setDrag(null);};const escape=e=>{if(e.key==='Escape')cancel();};window.addEventListener('blur',cancel);window.addEventListener('keydown',escape);return()=>{window.removeEventListener('blur',cancel);window.removeEventListener('keydown',escape);};},[]);
  useEffect(()=>{setDrag(null);active.current=null;setAnchor(null);},[date]);

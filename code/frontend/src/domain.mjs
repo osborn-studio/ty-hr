@@ -68,6 +68,7 @@ export const navigation = [
     {id:'payroll/contracts',name:'合同给薪核定',ready:true,access:c=>canRead(c,'payroll_sources')},
     {id:'payroll/setup/items',name:'工资项目设置',subtitle:'自定义项目与发布',ready:true,access:c=>canRead(c,'payroll_config')},
     {id:'payroll/setup/schemes',name:'工资方案设置',subtitle:'项目、依赖公式与方案版本',ready:true,access:c=>canRead(c,'payroll_config')},
+    {id:'payroll/setup/assign',name:'员工方案分配',subtitle:'按公司、门店或员工分配工资方案',ready:true,access:c=>canRead(c,'payroll_sources')},
     {id:'payroll/setup/profiles',name:'员工工资档案',subtitle:'个人定薪、调薪与复核',ready:true,access:c=>canRead(c,'payroll_sources')},
     {id:'payroll/setup/bulk',name:'批量定薪与调薪',subtitle:'批量选择、表格导入与差异预检',ready:true,access:c=>canRead(c,'payroll_sources')},
     {id:'payroll/scripts',name:'公式代码与触发器',ready:true,access:c=>canRead(c,'payroll_config')},

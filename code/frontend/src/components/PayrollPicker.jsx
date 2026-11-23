@@ -1,7 +1,7 @@
 import React,{useState}from'react';
 import{Button,ErrorState,Loading,useRemote}from'./UI.jsx';
 import{payrollQuery,CONFIG_NAMES,SOURCE_NAMES,list,systemName}from'../payroll-model.mjs';
-export function payrollReferenceLabel(r){return [r.full_name||r.label||r.name||CONFIG_NAMES[r.kind]||SOURCE_NAMES[r.domain]||'授权资料',r.person_number,r.stable_key,r.company_name,r.system?systemName(r.system):'',r.revision?'V'+r.revision:''].filter(Boolean).join(' · ');}
+export function payrollReferenceLabel(r){return [r.full_name||r.label||r.name||r.data?.name||CONFIG_NAMES[r.kind]||SOURCE_NAMES[r.domain]||'授权资料',r.person_number,r.stable_key,r.company_name,r.system?systemName(r.system):'',r.revision?'V'+r.revision:''].filter(Boolean).join(' · ');}
 export default function PayrollPicker({api,scope,view='configs',kind,status='approved',operation='payroll.native.workspace',label,value,onChange,multiple=false,system,disabled=false,compact=false}){
  const[query,setQuery]=useState(''),[search,setSearch]=useState(''),[page,setPage]=useState(1),size=10;
  const state=useRemote(signal=>api.request('/api/v2/query/'+operation,{method:'POST',body:payrollQuery(scope,{view,kind,status,system,q:query,page,page_size:size}),signal}),JSON.stringify([scope,view,kind,status,operation,system,query,page]));const selected=multiple?list(value):value?[value]:[],chosen=new Set(selected.map(r=>String(r.id)));
