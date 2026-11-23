@@ -88,7 +88,7 @@ export const navigation = [
     { id: 'attendance/versions', ready: true, name: '排班考勤版本记录', access: c => canRead(c, 'attendance_daily') },
     { id: 'attendance/leave', name: '假期台账', subtitle: '额度、申请与核销', ready: true, access: c => !['store_staff', 'station_staff', 'outsourced_staff', 'vendor_contact', 'outsource_hr'].includes(c.profile_code) && canRead(c, 'advanced_leave_manage') },
     { id: 'attendance/leave/settings', name: '假期设置', subtitle: '政策版本与规则发布', ready: true, access: c => !['store_staff', 'station_staff', 'outsourced_staff', 'vendor_contact', 'outsource_hr'].includes(c.profile_code) && (canRead(c, 'advanced_leave_config') || canWrite(c, 'advanced_leave_config')) },
-    { id: 'my/leave', name: '我的假期', subtitle: '本人额度与请假申请', ready: true, access: c => canRead(c, 'advanced_leave_self') && !['outsourced_staff', 'vendor_contact', 'outsource_hr'].includes(c.profile_code) },
+    { id: 'my/leave', name: '我的假期', subtitle: '本人额度与请假申请', ready: true, access: c => !!c.has_person && canRead(c, 'advanced_leave_self') && !['outsourced_staff', 'vendor_contact', 'outsource_hr'].includes(c.profile_code) },
   ] },
   { id: 'performance', name: '绩效管理', icon: 'chart', pages: [
     {id:'performance/plans',name:'考核计划',ready:true,access:c=>canRead(c,'perf_cycle')},
