@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "npm run test:legacy && npm run test:new && npm run test:cloud && npm run test:leave && npm run test:leave-lifecycle && npm run test:platform && npm run test:people-services && npm run test:time-native && npm run test:hr-native && npm run test:payroll-native && npm run test:performance-native && npm run test:portal-native && npm run test:learning-native && npm run test:standard-payroll && npm run test:integration-runtime && npm run test:demo-identity && npm run test:frontend && npm run test:workforce-native && npm run test:payroll-finance && npm run test:payroll-scripts && npm run test:time-workflow && npm run test:external-sso && npm run test:notifications && npm run test:recruiting-integration && npm run test:esign-integration && npm run test:sso-preflight && npm run test:notification-options && npm run test:bootstrap-projection && npm run test:payroll-field-projection && npm run test:workflow-delivery && npm run test:leave-payroll && npm run test:contract-payroll && npm run test:business-reminders && npm run test:payroll-industry-access && npm run test:leave-roster && npm run test:time-leave && npm run test:operator-binding",
+    "test": "npm run test:legacy && npm run test:new && npm run test:cloud && npm run test:leave && npm run test:leave-lifecycle && npm run test:platform && npm run test:people-services && npm run test:time-native && npm run test:hr-native && npm run test:payroll-native && npm run test:performance-native && npm run test:portal-native && npm run test:learning-native && npm run test:standard-payroll && npm run test:integration-runtime && npm run test:demo-identity && npm run test:frontend && npm run test:workforce-native && npm run test:payroll-finance && npm run test:payroll-scripts && npm run test:time-workflow && npm run test:external-sso && npm run test:notifications && npm run test:recruiting-integration && npm run test:esign-integration && npm run test:sso-preflight && npm run test:notification-options && npm run test:bootstrap-projection && npm run test:payroll-field-projection && npm run test:workflow-delivery && npm run test:leave-payroll && npm run test:contract-payroll && npm run test:business-reminders && npm run test:payroll-industry-access && npm run test:leave-roster && npm run test:time-leave && npm run test:operator-binding && npm run test:payroll-setup && npm run test:time-formal && npm run test:payroll-formulas",
     "test:db": "node test/run.mjs",
     "test:api": "node test/api.test.mjs",
     "test:scope": "node test/station-scope.mjs",
@@ -108,7 +108,10 @@
     "test:leave-roster": "node test/leave-roster-source.test.mjs && node test/leave-roster-workflow.test.mjs && node test/leave-recurring-roster.test.mjs",
     "test:time-leave": "node test/time-taken-leave.test.mjs && node test/time-leave-security.test.mjs && node test/time-leave-civil.test.mjs && node test/time-leave-industry.test.mjs && node test/time-leave-workforce.test.mjs && node --test frontend/test/time-leave-source-model.test.mjs",
     "test:time-leave:browser": "node test/time-taken-leave-browser.mjs",
-    "test:operator-binding": "node test/platform-operator-binding.test.mjs"
+    "test:operator-binding": "node test/platform-operator-binding.test.mjs",
+    "test:payroll-setup": "node test/payroll-setup.test.mjs && node test/payroll-setup-review.test.mjs && node test/payroll-salary-sheet.test.mjs && node test/payroll-minimum-qualification.test.mjs",
+    "test:time-formal": "node test/time-formal-default.test.mjs && node test/time-formal-review.test.mjs && node test/time-roster-report-current.test.mjs && node test/time-manual-roster-reconciliation.test.mjs",
+    "test:payroll-formulas": "node --test test/payroll-formula-core.test.mjs && node test/payroll-formula-cross-module.test.mjs && node test/payroll-formula-awards.test.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.16",

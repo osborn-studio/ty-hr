@@ -4,6 +4,8 @@
 
 ## 当前进度
 
+- [242工资项目公式与跨模块取数](docs/releases/242-payroll-formulas.md)：工资项目直接设置公式、19项函数与试算、已核绩效/培训/住宿费用按公式入薪；[操作补充](docs/manual/工资项目公式与跨模块算薪_20261118.md)。
+
 - [V11易用性与演示增补](docs/releases/20261117-v11-usability-demo.md)：组织图可拖动调宽、常用菜单前置、蓝白金层次增强，追加绩效与培训考试全流程场景。
 
 - V10本地开发与演示交付已完成：React工作台、单Node服务、PostgreSQL及完整演示帐套。范围与生产对接边界见[开发进度](docs/development-status.md)，资料及验收见[V10交付记录](docs/releases/20261117-v10-delivery.md)。

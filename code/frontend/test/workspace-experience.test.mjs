@@ -29,3 +29,11 @@ test('an invented preferred role cannot expose a page missing from the authorize
  assert.equal(workspaceExperience(c,[]).shortcuts.length,0);
  assert.equal(operatorProfileLabel({profile_code:'store_staff'},'系统管理员'),'门店员工');
 });
+
+test('personal leave requires both self-service permission and a bound employee',()=>{
+ const resources={advanced_leave_self:{can_read:true}};
+ const hasMyLeave=c=>visibleNavigation(c).flatMap(group=>group.pages).some(page=>page.id==='my/leave');
+ assert.equal(hasMyLeave({profile_code:'demo',has_person:false,resources}),false);
+ assert.equal(hasMyLeave({profile_code:'store_staff',has_person:true,resources}),true);
+ assert.equal(hasMyLeave({profile_code:'outsourced_staff',has_person:true,resources}),false);
+});

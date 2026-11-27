@@ -59,7 +59,7 @@ export function money(value) {
   return (negative ? '-' : '') + String(n / 100n) + '.' + String(n % 100n).padStart(2, '0');
 }
 export const SUPPORTED_OPERATORS = ['add', 'subtract', 'multiply', 'divide', 'min', 'max', 'if', 'eq', 'ne',
-  'lt', 'lte', 'gt', 'gte', 'and', 'or', 'round'
+  'lt', 'lte', 'gt', 'gte', 'and', 'or', 'round', 'ceil','floor','abs','sqrt','power','mod','greatest','least','coalesce','max0','min0','prorata','not'
 ];
 const arity = {
   add: [2, 20],
@@ -77,6 +77,7 @@ const arity = {
   gte: [2, 2],
   and: [2, 20],
   or: [2, 20],
+  ceil:[1,1],floor:[1,1],abs:[1,1],sqrt:[1,1],power:[2,2],mod:[2,2],greatest:[1,20],least:[1,20],coalesce:[1,20],max0:[1,1],min0:[1,1],prorata:[3,3],not:[1,1],
   round: [1, 2]
 };
 export function validateFormula(ast) {
@@ -130,8 +131,9 @@ export function parseFormula(text) {
   }
   let i = 0;
   const take = () => tokens[i++],
-    peek = () => tokens[i]?.value;
+    peek = () => /^(and|or)$/i.test(tokens[i]?.value||'')?tokens[i].value.toUpperCase():tokens[i]?.value;
   const prec = {
+    OR: -2, AND: -1,
     '=': 1,
     '==': 1,
     '!=': 1,
@@ -146,6 +148,7 @@ export function parseFormula(text) {
     '/': 3
   };
   const names = {
+    OR: 'or', AND: 'and',
     '+': 'add',
     '-': 'subtract',
     '*': 'multiply',
@@ -160,7 +163,7 @@ export function parseFormula(text) {
     '>=': 'gte'
   };
 
-  function expr(min = 0) {
+  function expr(min = -2) {
     let t = take(),
       left;
     if (!t) fail('公式不完整');
@@ -175,7 +178,8 @@ export function parseFormula(text) {
     } else if (t.type === 'num') left = t.value;
     else if (t.type === 'str') left = t.value;
     else if (t.type === 'id') {
-      if (peek() === '(') {
+      if(/^not$/i.test(t.value)&&peek()!=='(')left={op:'not',args:[expr(0)]};
+      else if (peek() === '(') {
         take();
         const args = [];
         if (peek() !== ')') {
@@ -197,7 +201,7 @@ export function parseFormula(text) {
     while (prec[peek()] >= min) {
       const op = take().value;
       left = {
-        op: names[op],
+        op: names[op]||names[op.toUpperCase()],
         args: [left, expr(prec[op] + 1)]
       };
     }
@@ -229,6 +233,8 @@ export function evaluateFormula(ast, inputs, {onRead}={}) {
     if (op === 'if') return run(a[truth(run(a[0])) ? 1 : 2]);
     if (op === 'and') return a.every(x => truth(run(x)));
     if (op === 'or') return a.some(x => truth(run(x)));
+    if(op==='not')return !truth(run(a[0]));
+    if(op==='coalesce'){for(const x of a){const v=run(x);if(v!==null&&v!==undefined&&v!=='')return v;}fail('COALESCE no known value');}
     const v = a.map(run);
     if (op === 'eq' || op === 'ne') {
       let equal;
@@ -249,6 +255,17 @@ export function evaluateFormula(ast, inputs, {onRead}={}) {
         return d.reduce(mul);
       case 'divide':
         return div(...d);
+      case 'greatest':return d.reduce((x,y)=>cmp(x,y)>0n?x:y);
+      case 'least':return d.reduce((x,y)=>cmp(x,y)<0n?x:y);
+      case 'abs':return rational(d[0].n<0n?-d[0].n:d[0].n,d[0].d);
+      case 'ceil':return rational(d[0].n/d[0].d+(d[0].n>0n&&d[0].n%d[0].d?1n:0n));
+      case 'floor':return rational(d[0].n/d[0].d-(d[0].n<0n&&d[0].n%d[0].d?1n:0n));
+      case 'max0':return d[0].n<0n?rational(0n):d[0];
+      case 'min0':return d[0].n>0n?rational(0n):d[0];
+      case 'prorata':return div(mul(d[0],d[1]),d[2]);
+      case 'mod':{const quotient=div(d[0],d[1]);return sub(d[0],mul(rational(quotient.n/quotient.d),d[1]));}
+      case 'power':{if(d[1].n%d[1].d)fail('POWER exponent must be integer');const e=d[1].n/d[1].d;if(e>16n||e< -16n)fail('POWER exponent limit -16..16');if(d[0].n===0n&&e<=0n)fail('POWER zero base');const n=e<0n?-e:e;return e<0n?rational(d[0].d**n,d[0].n**n):rational(d[0].n**n,d[0].d**n);}
+      case 'sqrt':{if(d[0].n<0n)fail('SQRT negative input');const root=n=>{if(n<2n)return n;let x=n,y=(x+1n)/2n;while(y<x){x=y;y=(x+n/x)/2n;}return x;};const n=root(d[0].n),den=root(d[0].d);if(n*n!==d[0].n||den*den!==d[0].d)fail('SQRT requires an exact rational result');return rational(n,den);}
       case 'min':
         return d.reduce((x, y) => cmp(x, y) < 0n ? x : y);
       case 'max':

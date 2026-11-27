@@ -10,7 +10,7 @@
     "dev": "vite --host 127.0.0.1 --port 5174 --strictPort",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4174 --strictPort",
-    "test": "node --test test/contracts.test.mjs test/platform-model.test.mjs test/platform-published-presentation.test.mjs test/private-commands.test.mjs test/rostering-model.test.mjs test/payroll-model.test.mjs test/performance-model.test.mjs test/performance-journal.test.mjs test/private-recovery.test.mjs test/learning-model.test.mjs test/integration-runtime-model.test.mjs test/workforce-model.test.mjs test/payroll-script-model.test.mjs test/auth-sso.test.mjs test/enterprise-login-model.test.mjs test/workspace-experience.test.mjs test/notification-links.test.mjs test/portal-notice-model.test.mjs test/contract-payroll-model.test.mjs",
+    "test": "node --test test/contracts.test.mjs test/platform-model.test.mjs test/platform-published-presentation.test.mjs test/private-commands.test.mjs test/rostering-model.test.mjs test/payroll-model.test.mjs test/performance-model.test.mjs test/performance-journal.test.mjs test/private-recovery.test.mjs test/learning-model.test.mjs test/integration-runtime-model.test.mjs test/workforce-model.test.mjs test/payroll-script-model.test.mjs test/auth-sso.test.mjs test/enterprise-login-model.test.mjs test/workspace-experience.test.mjs test/notification-links.test.mjs test/portal-notice-model.test.mjs test/contract-payroll-model.test.mjs test/payroll-setup-model.test.mjs test/salary-sheet-model.test.mjs",
     "test:ui": "node test/ui-smoke.mjs",
     "check": "node --test test/contracts.test.mjs && vite build",
     "test:platform-ui": "node test/platform-ui.test.mjs"
